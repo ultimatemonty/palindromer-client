@@ -6,7 +6,6 @@
   "author": "Chris McCuller <cmcculler@salesforce.com>",
   "license": "MIT",
   "private": false,
-  "type": "module",
   "scripts": {
     "start": "node index.js"
   }

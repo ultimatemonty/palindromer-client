@@ -1,20 +1,16 @@
-const net = require('net');
+const PalindromerClient = require('./client');
+const stringReverse = require('./stringReverse');
 
 const host = 'palindromer-bd7e0fc867d57915.elb.us-east-1.amazonaws.com';
 const port = 7777;
-
-const client = net.createConnection(port, host, () => {
-	console.log('connected!');
-});
-
-client.on('data', (data) => {
+const callback = function(data) {
 	let response = data.toString();
 
 	// check to see if the solution was sent
 	if (response.startsWith('!!! flag')) {
 		const solution = response.match(/(?<=\[)(.+)(?=\])/gm)[0];
-		console.log(`The solution is ${solution}`);
-		client.end();
+		console.log('The solution is', '\x1b[32m', `${solution}`, '\x1b[0m');
+		this.client.end();
 		return;
 	}
 
@@ -26,10 +22,10 @@ client.on('data', (data) => {
 			})
 			.join(' ');
 
-  console.log(answers);
-	client.write(`${answers}\n`);
-});
-
-const stringReverse = function(string) {
-	return Array.from(string).reverse().join('');
+	console.log(answers);
+	this.client.write(`${answers}\n`);
 }
+
+const client = new PalindromerClient(port, host, callback);
+client.init();
+client.start();
